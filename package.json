@@ -1,0 +1,29 @@
+{
+  "dependencies": {
+    "gsap": "^3.12.5",
+    "noisejs": "^2.1.0",
+    "orrery": "file:",
+    "parcel": "^2.12.0",
+    "three": "^0.169.0"
+  },
+  "name": "orrery",
+  "description": "3D Web app to simulate the solar system",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "parcel index.html",
+    "build": "parcel build index.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/okhadragy/orrery-web-app.git"
+  },
+  "author": "Omar Elkhadragy",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/okhadragy/orrery-web-app/issues"
+  },
+  "homepage": "https://github.com/okhadragy/orrery-web-app#readme",
+  "devDependencies": {
+    "buffer": "^6.0.3"
+  }
+}

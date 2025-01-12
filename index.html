@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE-edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="./assets/icons/saturnFAVICON.png">
+    <title>Project PERIHELION</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <script type="vertex" id="vertexshader"> varying vec2 vUv;
+
+			void main() {
+
+				vUv = uv;
+
+				gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+
+			}
+
+		</script>
+    <script type="fragment" id="fragmentshader"> uniform sampler2D baseTexture;
+			uniform sampler2D bloomTexture;
+		
+			varying vec2 vUv;
+		
+			void main() {
+		
+				vec4 baseColor = texture2D(baseTexture, vUv);
+				vec4 bloomColor = texture2D(bloomTexture, vUv);
+				gl_FragColor = baseColor + bloomColor;
+		
+				// apply tone mapping or adjust colors if needed
+				// gl_FragColor = vec4(mix(baseColor.rgb, bloomColor.rgb, 0.5), 1.0); // Example of mixing with 50% bloom
+			}
+		
+		</script>
+    <script type="importmap"> {
+				"imports": {
+					"three": "../build/three.module.js",
+					"three/addons/": "./jsm/"
+				}
+			}
+		</script>
+
+    <script type="module" src="./src/script.js"></script>
+    <audio id="song1" src="./assets/audio/music/rain.mp3"></audio>
+    <audio id="audioClip"></audio>
+    <div class="loadingcontainer unselectable" id="loadingcontainer">
+        <div class="headphones">USE HEADPHONES FOR A BETTER EXPERIENCE</div><br>
+        <img width=500px height=500px src="./assets/icons/purplerain.png" class="unselectable"> Please interact with the
+        page in order to load all the necessary assets.<br>
+        <footer class="nasalow">NASA Space Apps Cairo 2024</footer>
+    </div>
+    <div id="everything" class="hidden">
+        <button id="resetButton" style="position: fixed;margin-left:2.25%; margin-top:2.1%;"
+            class="controls unselectable"><span class="arrow">
+                <</span> THE SOLAR SYSTEM</button>
+        <button id="backToEarth" style="position: fixed;margin-left:2.25%; margin-top:2.1%; display:none;"
+            class="controls unselectable"><span class="arrow">
+                <</span> EARTH</button>
+        <button id="settingsbutton" style="position: absolute; right:0; margin-right:2.25%; margin-top:2%;"
+            class="settings unselectable"><img width=25px height=25px src="./assets/icons/settingsicon.png" /></button>
+        <div class="overlay  unselectable">
+            <div class="overlay-content">
+                <header class="overlay-top">
+                    <div class="centertext" id="headertext"> THE SOLAR SYSTEM </div><br>
+                </header>
+                <div class="overlay-sett toolbar-row">
+                    <div id="settings" class="midmenu hidden">
+                        <div class="settingsheader">Settings</div>
+                        <div class="settingsoption"> Speed<input type="range" id="speedslider" min="1" max="300000"
+                                step="100" value="1">
+                        </div>
+                        <div class="settingsoption"> Music<input type="range" id="musicslider" min="0" max="1"
+                                step="0.05" value="0.5">
+                        </div>
+
+                        <div class="settingsoption"> Narrator<input type="range" id="narrslider" min="0" max="1"
+                                step="0.05" value="0.5">
+                        </div>
+                        <div class="settingsoption"> Planet Orbits<div class="fullslider"><label class="switch"><input
+                                        type="checkbox" id="orbitcheck" checked><span
+                                        class="slider round"></span></label></div>
+                        </div>
+                        <div class="settingsoption"> Asteroid Orbits<div class="fullslider"><label class="switch"><input
+                                        type="checkbox" id="asteroidorbitcheck"><span
+                                        class="slider round"></span></label></div>
+                        </div>
+                        <div class="settingsoption"> Subtitles<div class="fullslider"><label class="switch"><input
+                                        type="checkbox" id="subcheck" checked><span class="slider round"></span></label>
+                            </div>
+                        </div>
+                        <div class="settingsoption"> Colorblind Mode<div class="custom-select" style="width: 100px;">
+                                <select id="cb" style="height:30px;" class="dropdown" id="colorblind">
+                                    <option value="normal">Normal</option>
+                                    <option value="protanopia">Protanopia</option>
+                                    <option value="deuteranopia">Deuteranopia</option>
+                                    <option value="tritanopia">Tritanopia</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div style="text-align:center; margin-top:15%; font-size: 24px; color: gray;"><button
+                                class="exitbutton" id="closebutton">Close</button></div>
+                        <!-- <div class="instructions" style=" text-align:center; font-size: 24px; color: gray;">usingf1.</div> -->
+                    </div>
+                </div>
+                <div class="overlay-row toolbar-row" id="planetui">
+                    <div class="leftmenu" id="lm">
+                        <div>
+                            <span id="description-title">DESCRIPTION</span>
+                            <div id="description-value" class="value"></div>
+                        </div>
+                        <div class="menu-item">MASS</div>
+                        <div class="value">
+                            <div id="mass-value" style="display: inline;"></div> &times; 10<sup>24</sup> kg
+                        </div>
+                        <div class="menu-item">RADIUS</div>
+                        <div id="radius-value" class="value"></div>
+                        <div class="menu-item">ORBITAL PERIOD</div>
+                        <div id="orbital-period-value" class="value"></div>
+                        <div style="text-align:center;margin-top:10%; font-size: 24px; color: gray;"><button
+                                class="playbutton" id="playfact"><img style="width:25px; height:auto" class="soundicon"
+                                    src="./assets/icons/soundicon.png" />Did You Know?</button></div>
+                    </div>
+                    <div class="rightmenu" id="rm">
+                        <div id="nasa-info"> All relevant information was obtained from NASA's official website. <img
+                                src="./assets/icons/NASA_logo.png"
+                                style="max-width: 75%; height: auto; margin-top: 2%;" /><br> To find out more, please
+                            check<br>
+                            <a id="fact-sheet-link" href="#" target="_blank">NASA'S Fact Sheet</a>.<br>
+                            <button class="neobutton" id="neobutton">NEAR-EARTH OBJECTS</button>
+                        </div>
+                    </div>
+                    <div class="keplerianParameters" id="secondlm" style="display: none;">
+                        <div class="firstmenu-item">TYPE</div>
+                        <div id="astUItype" class="value"></div>
+                        <div class="menu-item">SEMI-MAJOR AXIS</div>
+                        <div id="astUIsemimajor" class="value"></div>
+                        <div class="menu-item">INCLINATION</div>
+                        <div id="astUIincline" class="value"></div>
+                        <div class="menu-item">ECCENTRICITY</div>
+                        <div id="astUIecc" class="value"></div>
+                        <div class="menu-item">MEAN ANOMALY</div>
+                        <div id="astUIma" class="value"></div>
+                        <div class="menu-item">ARGUMENT OF PERIHELION</div>
+                        <div id="astUIargu" class="value"></div>
+                        <div class="menu-item">ORBITAL PERIOD</div>
+                        <div id="astUIperiod" class="value"></div>
+                    </div>
+                    <div class="big" id="am" style="display: none;">
+                        <div class="asteroidControls">
+                            <input type="text" id="search" placeholder="Search..." autocomplete="off">
+                            <select id="astType">
+                                <option value="">All</option>
+                                <option value="NEA">Near-Earth Asteroid</option>
+                                <option value="PHA">Possibly Hazardous Asteroid</option>
+                                <option value="NEC">Near-Earth Comet</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <footer class="overlay-bottom">
+                    <div class="subtitle-container">
+                        <div class="subtitle" id="subtitle"></div>
+                    </div>
+                    <div class="widget previous-button">
+                        <button class="controls">
+                            <div id="prevbutton"><span class="arrow">
+                                    <</span> PREVIOUS</div>
+                        </button>
+                    </div>
+                    <div class="widget next-button">
+                        <button class="controls">
+                            <div id="nextbutton">NEXT <span class="arrow">></span></div>
+                        </button>
+                    </div>
+                </footer>
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+</body>
+
+</html>
